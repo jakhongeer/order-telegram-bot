@@ -1,6 +1,7 @@
 from telegram.ext import Updater, CommandHandler
 from config import API_TOKEN
 import logging
+from uuid import uuid4
 
 
 updater = Updater(token=API_TOKEN, use_context=True)
@@ -21,9 +22,31 @@ def start_command(update, context):
 
     context.bot.send_message(chat_id=update.effective_chat.id, text="Click OK to continue:")
 
+def put(update, context):
+    """Usage: /put value"""
+    # Generate ID and separate value from command
+    key = str(uuid4())
+    # We don't use context.args here, because the value may contain whitespaces
+    value = update.message.text.partition(' ')[2]
+
+    # Store value
+    context.user_data[key] = value
+    # Send the key to the user
+    update.message.reply_text(key)
+
+def get(update, context):
+    """Usage: /get uuid"""
+    # Seperate ID from command
+    key = context.args[0]
+
+    # Load value and send it to the user
+    value = context.user_data.get(key, 'Not found')
+    update.message.reply_text(value)
 
 def main():
     start_handler= CommandHandler('start', start_command)
+    dp.add_handler(CommandHandler('put', put))
+    dp.add_handler(CommandHandler('get', get))
     dp.add_handler(start_handler)
 
     updater.start_polling()
