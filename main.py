@@ -4,7 +4,7 @@ from telegram.ext import (Updater,
                           MessageHandler,
                           Filters,
                           CallbackContext)
-from telegram import ChatAction
+from telegram import ReplyKeyboardMarkup, KeyboardButton
 from AuthConfig.keys import API_TOKEN
 from errror_handler import error_handler
 import logging
@@ -15,7 +15,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 from chat_action import send_typing_action
 
 
-@send_typing_action #for sending typing.. action, define before the function
+@send_typing_action  # for sending typing.. action, define before the function
 def start_command(update, context):
     time.sleep(0.5)
     """When user sends start command do these"""
@@ -24,12 +24,12 @@ def start_command(update, context):
 
     # Showing "typing..." action
 
-
     # For sending a message
     context.bot.send_message(chat_id=update.effective_chat.id, text="Hello buddy👋 Welcome to our 'theteam' bot.")
 
-def echo(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
+
+# def echo(update, context):
+#     context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
 
 
 def unknown(update, context):
@@ -37,6 +37,15 @@ def unknown(update, context):
     It should be added last part of bot. Otherwise it may be ignored the commands which are written after this"""
     context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, I didn't understand that command.")
 
+
+def request_location_contact(update, context):
+    location_keyboard = KeyboardButton(text="send_location", request_location=True)
+    contact_keyboard = KeyboardButton(text="send_contact", request_contact=True)
+    custom_keyboard = [[location_keyboard, contact_keyboard]]
+    reply_markup = ReplyKeyboardMarkup(custom_keyboard)
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text="Would you mind sharing your location and contact with me?",
+                             reply_markup=reply_markup)
 
 
 def main():
@@ -47,15 +56,14 @@ def main():
     start_handler = CommandHandler('start', start_command)
     dispatcher.add_handler(start_handler)
 
-    echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
-    dispatcher.add_handler(echo_handler)
-
+    # echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
+    # dispatcher.add_handler(echo_handler)
 
     unknown_handler = MessageHandler(Filters.command, unknown)
     dispatcher.add_handler(unknown_handler)
 
-
-
+    request_l_c = MessageHandler(Filters.regex("data") & (~Filters.command), request_location_contact)
+    dispatcher.add_handler(request_l_c)
     # ...and the error handler
     # dispatcher.add_error_handler(error_handler)
 
