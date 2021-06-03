@@ -1,31 +1,30 @@
+import time
 from telegram.ext import (Updater,
                           CommandHandler,
                           MessageHandler,
-                          Filters)
+                          Filters,
+                          CallbackContext)
+from telegram import ChatAction
 from AuthConfig.keys import API_TOKEN
-import logging
 from errror_handler import error_handler
-import html
-import json
 import logging
-import traceback
-from telegram import Update, ParseMode
-from telegram.ext import Updater, CallbackContext, CommandHandler
-
-from telegram.ext import InlineQueryHandler
-
-from telegram import InlineQueryResultArticle, InputTextMessageContent
 
 # It gives you when and why things don't work as expected.
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.DEBUG)
+from chat_action import send_typing_action
 
 
-
+@send_typing_action #for sending typing.. action, define before the function
 def start_command(update, context):
+    time.sleep(0.5)
     """When user sends start command do these"""
     # For sending a photo to user
-    context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('assets/hello_world.png', 'rb'))
+    context.bot.send_photo(chat_id=update.effective_chat.id, photo=open('assets/hello_world.png', 'rb'), )
+
+    # Showing "typing..." action
+
+
     # For sending a message
     context.bot.send_message(chat_id=update.effective_chat.id, text="Hello buddy👋 Welcome to our 'theteam' bot.")
 
@@ -51,14 +50,13 @@ def main():
     echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
     dispatcher.add_handler(echo_handler)
 
-    # caps_handler = CommandHandler('caps', caps)
-    # dispatcher.add_handler(caps_handler)
+
     unknown_handler = MessageHandler(Filters.command, unknown)
     dispatcher.add_handler(unknown_handler)
 
 
 
     # ...and the error handler
-    dispatcher.add_error_handler(error_handler)
+    # dispatcher.add_error_handler(error_handler)
 
     updater.start_polling()
