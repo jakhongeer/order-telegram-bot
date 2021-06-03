@@ -4,7 +4,7 @@ from telegram.ext import (Updater,
                           MessageHandler,
                           Filters,
                           CallbackContext)
-from telegram import ReplyKeyboardMarkup, KeyboardButton
+from telegram import ReplyKeyboardMarkup, KeyboardButton, ParseMode
 from AuthConfig.keys import API_TOKEN
 from errror_handler import error_handler
 import logging
@@ -47,6 +47,9 @@ def request_location_contact(update, context):
                              text="Would you mind sharing your location and contact with me?",
                              reply_markup=reply_markup)
 
+def types_parse_mode(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id, text='<b>It is the bold text</b>\n<i>This is the italic</i>\n<a href="https://python-telegram-bot.readthedocs.io/">This is the link for python-telegram-bot docs page</a>.',
+                             parse_mode=ParseMode.HTML)
 
 def main():
     updater = Updater(token=API_TOKEN, use_context=True)
@@ -64,6 +67,9 @@ def main():
 
     request_l_c = MessageHandler(Filters.regex("data") & (~Filters.command), request_location_contact)
     dispatcher.add_handler(request_l_c)
+
+    testing_parse_mode = MessageHandler(Filters.regex("parse"), types_parse_mode)
+    dispatcher.add_handler(testing_parse_mode)
     # ...and the error handler
     # dispatcher.add_error_handler(error_handler)
 
