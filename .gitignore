@@ -5,7 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
-
+AuthConfig/
 config.py
 
 # Distribution / packaging
