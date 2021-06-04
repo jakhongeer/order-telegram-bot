@@ -47,9 +47,21 @@ def request_location_contact(update, context):
                              text="Would you mind sharing your location and contact with me?",
                              reply_markup=reply_markup)
 
+
 def types_parse_mode(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text='<b>It is the bold text</b>\n<i>This is the italic</i>\n<a href="https://python-telegram-bot.readthedocs.io/">This is the link for python-telegram-bot docs page</a>.',
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text='<b>It is the bold text</b>\n<i>This is the italic</i>\n<a href="https://python-telegram-bot.readthedocs.io/">This is the link for python-telegram-bot docs page</a>.',
                              parse_mode=ParseMode.HTML)
+
+
+def keyboard_menus(update, context):
+    custom_keyboard = [['top-left', 'top-right'],
+                       ['bottom-left', 'bottom-right']]
+    reply_markup = ReplyKeyboardMarkup(custom_keyboard)
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text="Keyboard for testing",
+                             reply_markup=reply_markup)
+
 
 def main():
     updater = Updater(token=API_TOKEN, use_context=True)
@@ -70,6 +82,11 @@ def main():
 
     testing_parse_mode = MessageHandler(Filters.regex("parse"), types_parse_mode)
     dispatcher.add_handler(testing_parse_mode)
+
+    custom_keyboard = MessageHandler(Filters.regex("custom kb"), keyboard_menus)
+    dispatcher.add_handler(custom_keyboard)
+
+
     # ...and the error handler
     # dispatcher.add_error_handler(error_handler)
 
